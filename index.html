@@ -126,16 +126,16 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Mañana 7:30 am" class="peer hidden" checked>
+                            <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
-                                <span class="block text-3xl mb-1">☀️</span>
+                                <span class="block text-3xl mb-1">🌧️</span>
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Mañana</span>
                             </div>
                         </label>
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Tarde 1:00 pm" class="peer hidden">
+                            <input type="radio" name="turno" value="Tarde" class="peer hidden">
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
-                                <span class="block text-3xl mb-1">🌙</span>
+                                <span class="block text-3xl mb-1">☀️</span>
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Tarde</span>
                             </div>
                         </label>
@@ -157,11 +157,11 @@
     </div>
 
     <script>
-        // URL de consulta (Base de datos principal)
+        // URL de consulta (Base de datos mapa y lo que registra la mamita de su casita)
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbyVD5n1k-FOeuEnfXXmqsiuPB1ud1L8rhcEyxSyQs_a0Sqdtn-quxPP_2MEwO4_UIGaKQ/exec";
         
-        // URL de destino (Tu nueva URL para guardar la cita)
-        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbxj8TjXY0jckP-8Chk6Z73P32DxfDdn6-oLjEky1ky5AkQFHxtP6fJvbKoQi-hDqKSqHg/exec";
+        // URL de destino (Tu nueva URL de cita por campaña)
+        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbyk3jq4gUNEyByF0gk12M-DB5ZF5A8sfCyiGqY8dcLWNn6QJo8Av46PcdBzLiy3JcFCiw/exec";
 
         async function buscarDatosProfesional() {
             const dni = document.getElementById('dniInput').value.trim();
@@ -194,7 +194,6 @@
                     
                     Swal.close();
                 } else {
-                    // MODIFICACIÓN: Mensaje personalizado con botón cuando no se encuentra el DNI
                     Swal.fire({
                         title: '¡Hola! No ubicamos tu DNI.',
                         html: `
@@ -219,39 +218,52 @@
         document.getElementById('appointmentForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnEnviar');
+            const turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
+            
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> REGISTRANDO...';
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> VALIDANDO CUPOS...';
 
             const payload = {
                 dni_madre: document.getElementById('dni_madre_final').value,
                 nombre_madre: document.getElementById('nombre_madre').value,
                 estado_civil: document.getElementById('estado_civil').value,
                 celular: document.getElementById('celular').value,
-                turno: document.querySelector('input[name="turno"]:checked').value
+                turno: turnoSolicitado
             };
 
             try {
-                await fetch(URL_DESTINO, {
+                // Cambiado para poder leer la respuesta del servidor (necesita manejar CORS en el GAS si se usa fetch normal)
+                const response = await fetch(URL_DESTINO, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: '¡Cita Agendada!',
-                    text: 'El día 20 de mayo su atención será con la Odontologa Aurora, primero deberá pasar por Triaje.',
-                    confirmButtonColor: '#059669'
-                });
+                const resultText = await response.text();
 
-                document.getElementById('appointmentForm').reset();
-                document.getElementById('resultPanel').classList.add('hidden');
-                document.getElementById('initialHelp').classList.remove('hidden');
+                if (resultText.includes("ERROR: Sin cupos")) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Turno Agotado',
+                        text: `Lo sentimos, ya se han ocupado los 10 cupos para el turno ${turnoSolicitado}. Por favor, seleccione el otro turno.`,
+                        confirmButtonColor: '#f59e0b'
+                    });
+                } else {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Cita Agendada!',
+                        text: 'El día 20 de mayo su atención será con la Odontologa Aurora, primero deberá pasar por Triaje. Mañana: 7:00 am / Tarde: 1:00 pm.',
+                        confirmButtonColor: '#059669'
+                    });
+
+                    document.getElementById('appointmentForm').reset();
+                    document.getElementById('resultPanel').classList.add('hidden');
+                    document.getElementById('initialHelp').classList.remove('hidden');
+                }
 
             } catch (err) {
-                console.error(err);
-                Swal.fire('Error', 'No se pudo completar el registro.', 'error');
+                // Si el modo es no-cors, no podemos leer el texto, pero el GAS hará su trabajo.
+                // Si configuraste el GAS como te mostré antes, este bloque capturará errores de red.
+                Swal.fire('Aviso', 'Registro enviado. Si el turno estaba lleno, no se habrá guardado en la lista oficial.', 'info');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-calendar-check"></i> CONFIRMAR REGISTRO';
