@@ -13,7 +13,7 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: radial-gradient(circle at top right, #fdfcfb 0%, #e2d1c3 100%);
-            min-height: 100-vh;
+            min-height: 100vh;
         }
 
         .glass-card {
@@ -31,6 +31,12 @@
         .step-badge {
             background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="flex items-center justify-center p-4 py-10">
@@ -45,7 +51,6 @@
                 <h1 class="text-4xl font-extrabold tracking-tight">Campaña Salud <span class="text-indigo-300">Mamitas</span></h1>
                 <p class="text-indigo-100 mt-2 opacity-80">Validación instantánea de georeferencia y turnos.</p>
             </div>
-            <!-- Decoración abstracta -->
             <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         </div>
 
@@ -75,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: RESULTADOS (Se muestra con animación) -->
+            <!-- SECCIÓN 2: RESULTADOS -->
             <div id="resultPanel" class="hidden animate-fade-in space-y-6">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">2</div>
@@ -109,7 +114,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Internos -->
                 <input type="hidden" id="dni_madre_final">
                 <input type="hidden" id="estado_civil" value="Georeferenciado">
 
@@ -138,14 +142,12 @@
                     </div>
                 </div>
 
-                <!-- Botón Final -->
                 <button type="submit" id="btnEnviar" 
                     class="w-full bg-indigo-600 hover:bg-indigo-800 text-white py-5 rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-200 transition-all transform active:scale-95 flex items-center justify-center gap-3">
                     <i class="fas fa-calendar-check"></i> CONFIRMAR REGISTRO
                 </button>
             </div>
 
-            <!-- Loader de inicio -->
             <div id="initialHelp" class="text-center py-10 text-gray-400">
                 <i class="fas fa-fingerprint text-5xl mb-4 opacity-20"></i>
                 <p class="text-sm font-medium">Ingrese un DNI para comenzar la validación.</p>
@@ -155,8 +157,11 @@
     </div>
 
     <script>
+        // URL de consulta (Base de datos principal)
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbyVD5n1k-FOeuEnfXXmqsiuPB1ud1L8rhcEyxSyQs_a0Sqdtn-quxPP_2MEwO4_UIGaKQ/exec";
-        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbxpTFXiPn7wcrxsGLiQzYZmFuswTohkNLy_4zzfZotN9Pqn3bU1quVeJD8h2NOOfRWp7g/exec";
+        
+        // URL de destino (Tu nueva URL para guardar la cita)
+        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbxj8TjXY0jckP-8Chk6Z73P32DxfDdn6-oLjEky1ky5AkQFHxtP6fJvbKoQi-hDqKSqHg/exec";
 
         async function buscarDatosProfesional() {
             const dni = document.getElementById('dniInput').value.trim();
@@ -173,20 +178,17 @@
                 const response = await fetch(URL_CONSULTA);
                 const data = await response.json();
 
-                // BUSQUEDA POR EL NUEVO CAMPO dniMadre QUE AGREGAMOS AL SCRIPT
                 const registro = data.find(item => 
                     String(item.dniMadre).trim() === dni || 
                     String(item.dniHijo).trim() === dni
                 );
 
                 if (registro) {
-                    // Llenar campos
                     document.getElementById('nombre_madre').value = registro.nombreMadre || "No registrado";
                     document.getElementById('celular').value = registro.celular || "Sin celular";
                     document.getElementById('domicilio').value = registro.domicilio || "Sin dirección";
                     document.getElementById('dni_madre_final').value = dni;
 
-                    // Interfaz
                     document.getElementById('resultPanel').classList.remove('hidden');
                     document.getElementById('initialHelp').classList.add('hidden');
                     
@@ -195,12 +197,12 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Sin Georeferencia',
-                        text: 'El DNI ingresado no tiene coordenadas registradas en la base principal (Columna L).',
+                        text: 'El DNI ingresado no tiene coordenadas registradas en la base principal.',
                         confirmButtonColor: '#4f46e5'
                     });
                 }
             } catch (error) {
-                Swal.fire('Error de Red', 'No se pudo conectar con el servidor de Google.', 'error');
+                Swal.fire('Error de Red', 'No se pudo conectar con el servidor.', 'error');
             }
         }
 
@@ -215,30 +217,33 @@
                 nombre_madre: document.getElementById('nombre_madre').value,
                 estado_civil: document.getElementById('estado_civil').value,
                 celular: document.getElementById('celular').value,
-                domicilio: document.getElementById('domicilio').value,
                 turno: document.querySelector('input[name="turno"]:checked').value
             };
 
             try {
+                // Enviamos como texto plano para evitar bloqueos de CORS en Apps Script
                 await fetch(URL_DESTINO, {
                     method: 'POST',
                     mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
 
-                Swal.fire({
+                // Al usar 'no-cors' no podemos leer la respuesta, pero si no hay error en el fetch, asumimos éxito
+                await Swal.fire({
                     icon: 'success',
                     title: '¡Cita Agendada!',
-                    text: 'Se ha registrado correctamente en CampañaSaludMamitas.',
+                    text: 'Se ha registrado correctamente en su hoja de cálculo.',
                     confirmButtonColor: '#059669'
                 });
 
-                // Reset
+                // Reiniciar formulario
                 document.getElementById('appointmentForm').reset();
                 document.getElementById('resultPanel').classList.add('hidden');
                 document.getElementById('initialHelp').classList.remove('hidden');
 
             } catch (err) {
+                console.error(err);
                 Swal.fire('Error', 'No se pudo completar el registro.', 'error');
             } finally {
                 btn.disabled = false;
