@@ -194,11 +194,21 @@
                     
                     Swal.close();
                 } else {
+                    // MODIFICACIÓN: Mensaje personalizado con botón cuando no se encuentra el DNI
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Sin Georeferencia',
-                        text: 'El DNI ingresado no tiene coordenadas registradas en la base principal.',
-                        confirmButtonColor: '#4f46e5'
+                        title: '¡Hola! No ubicamos tu DNI.',
+                        html: `
+                            <div class="text-center">
+                                <p class="mb-5 text-gray-600">No te preocupes, puedes registrarte junto a tus hijos, activando tu ubicación y haciendo clic abajo. ¡Es rápido y sencillo! y retorna inmediatamente a registrar tu cita</p>
+                                <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" 
+                                   class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline">
+                                   <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME AHORA
+                                </a>
+                            </div>
+                        `,
+                        icon: 'info',
+                        showConfirmButton: false,
+                        showCloseButton: true
                     });
                 }
             } catch (error) {
@@ -221,7 +231,6 @@
             };
 
             try {
-                // Enviamos como texto plano para evitar bloqueos de CORS en Apps Script
                 await fetch(URL_DESTINO, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -229,7 +238,6 @@
                     body: JSON.stringify(payload)
                 });
 
-                // Al usar 'no-cors' no podemos leer la respuesta, pero si no hay error en el fetch, asumimos éxito
                 await Swal.fire({
                     icon: 'success',
                     title: '¡Cita Agendada!',
@@ -237,7 +245,6 @@
                     confirmButtonColor: '#059669'
                 });
 
-                // Reiniciar formulario
                 document.getElementById('appointmentForm').reset();
                 document.getElementById('resultPanel').classList.add('hidden');
                 document.getElementById('initialHelp').classList.remove('hidden');
