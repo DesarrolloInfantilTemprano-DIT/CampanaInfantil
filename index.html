@@ -64,7 +64,7 @@
                 </div>
                 
                 <div class="relative group">
-                    <label class="text-xs font-black text-indigo-500 uppercase mb-2 block ml-1">Documento DNI Madre</label>
+                    <label class="text-xs font-black text-indigo-500 uppercase mb-2 block ml-1">Documento DNI (Madre o Hijo)</label>
                     <div class="flex gap-3">
                         <div class="relative flex-1">
                             <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
@@ -89,7 +89,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="col-span-full bg-white border border-gray-100 p-5 rounded-3xl shadow-sm">
-                        <span class="text-[10px] font-black text-gray-400 uppercase block mb-1">Nombre Completo</span>
+                        <span class="text-[10px] font-black text-gray-400 uppercase block mb-1">Nombre Completo Encontrado</span>
                         <input type="text" id="nombre_madre" readonly class="w-full text-lg font-bold text-gray-800 outline-none bg-transparent">
                     </div>
                     
@@ -128,7 +128,7 @@
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
-                                <span class="block text-3xl mb-1">🌧️</span>
+                                <span class="block text-3xl mb-1">☁️</span>
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Mañana</span>
                             </div>
                         </label>
@@ -157,10 +157,7 @@
     </div>
 
     <script>
-        // URL de consulta (Base de datos mapa y lo que registra la mamita de su casita)
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbyVD5n1k-FOeuEnfXXmqsiuPB1ud1L8rhcEyxSyQs_a0Sqdtn-quxPP_2MEwO4_UIGaKQ/exec";
-        
-        // URL de destino (Tu nueva URL de cita por campaña)
         const URL_DESTINO = "https://script.google.com/macros/s/AKfycbyk3jq4gUNEyByF0gk12M-DB5ZF5A8sfCyiGqY8dcLWNn6QJo8Av46PcdBzLiy3JcFCiw/exec";
 
         async function buscarDatosProfesional() {
@@ -178,15 +175,29 @@
                 const response = await fetch(URL_CONSULTA);
                 const data = await response.json();
 
-                const registro = data.find(item => 
-                    String(item.dniMadre).trim() === dni || 
-                    String(item.dniHijo).trim() === dni
-                );
+                // Lógica de búsqueda condicional por columna
+                let registroEncontrado = null;
+                let nombreA_Mostrar = "";
 
-                if (registro) {
-                    document.getElementById('nombre_madre').value = registro.nombreMadre || "No registrado";
-                    document.getElementById('celular').value = registro.celular || "Sin celular";
-                    document.getElementById('domicilio').value = registro.domicilio || "Sin dirección";
+                // 1. Intentar buscar en Columna B (dniMadre)
+                const busquedaMadre = data.find(item => String(item.dniMadre).trim() === dni);
+                
+                if (busquedaMadre) {
+                    registroEncontrado = busquedaMadre;
+                    nombreA_Mostrar = busquedaMadre.nombreMadre; // Columna C
+                } else {
+                    // 2. Si no está en B, buscar en Columna H (dniHijo)
+                    const busquedaHijo = data.find(item => String(item.dniHijo).trim() === dni);
+                    if (busquedaHijo) {
+                        registroEncontrado = busquedaHijo;
+                        nombreA_Mostrar = busquedaHijo.nombreHijo; // Columna I
+                    }
+                }
+
+                if (registroEncontrado) {
+                    document.getElementById('nombre_madre').value = nombreA_Mostrar || "No registrado";
+                    document.getElementById('celular').value = registroEncontrado.celular || "Sin celular";
+                    document.getElementById('domicilio').value = registroEncontrado.domicilio || "Sin dirección";
                     document.getElementById('dni_madre_final').value = dni;
 
                     document.getElementById('resultPanel').classList.remove('hidden');
@@ -198,7 +209,7 @@
                         title: '¡Hola! No ubicamos tu DNI.',
                         html: `
                             <div class="text-center">
-                                <p class="mb-5 text-gray-600">No te preocupes, puedes registrarte junto a tus hijos, activando tu ubicación y haciendo clic abajo. ¡Es rápido y sencillo! y retorna inmediatamente a registrar tu cita</p>
+                                <p class="mb-5 text-gray-600">No te preocupes, puedes registrarte junto a tus hijos, activando tu ubicación y haciendo clic abajo. ¡Es rápido y sencillo!</p>
                                 <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" 
                                    class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline">
                                    <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME AHORA
@@ -232,7 +243,6 @@
             };
 
             try {
-                // Cambiado para poder leer la respuesta del servidor (necesita manejar CORS en el GAS si se usa fetch normal)
                 const response = await fetch(URL_DESTINO, {
                     method: 'POST',
                     body: JSON.stringify(payload)
@@ -244,14 +254,14 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Turno Agotado',
-                        text: `Lo sentimos, ya se han ocupado los 10 cupos para el turno ${turnoSolicitado}. Por favor, seleccione el otro turno.`,
+                        text: `Lo sentimos, ya se han ocupado los cupos para el turno ${turnoSolicitado}.`,
                         confirmButtonColor: '#f59e0b'
                     });
                 } else {
                     await Swal.fire({
                         icon: 'success',
                         title: '¡Cita Agendada!',
-                        text: 'El día 20 de mayo su atención será con la Odontologa Aurora, primero deberá pasar por Triaje. Mañana: 7:00 am / Tarde: 1:00 pm.',
+                        text: 'El día 20 de mayo su atención será con la Odontologa Aurora. Mañana: 7:00 am / Tarde: 1:00 pm.',
                         confirmButtonColor: '#059669'
                     });
 
@@ -261,9 +271,7 @@
                 }
 
             } catch (err) {
-                // Si el modo es no-cors, no podemos leer el texto, pero el GAS hará su trabajo.
-                // Si configuraste el GAS como te mostré antes, este bloque capturará errores de red.
-                Swal.fire('Aviso', 'Registro enviado. Si el turno estaba lleno, no se habrá guardado en la lista oficial.', 'info');
+                Swal.fire('Aviso', 'Registro enviado. Verifique su conexión si no recibe confirmación.', 'info');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-calendar-check"></i> CONFIRMAR REGISTRO';
