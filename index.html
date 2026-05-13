@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaña Salud Mamitas | Registro Profesional</title>
+    <title>Campaña Odontológica: Mamitas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -48,8 +48,8 @@
                 <div class="flex items-center gap-3 mb-2">
                     <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">Módulo de Citas</span>
                 </div>
-                <h1 class="text-4xl font-extrabold tracking-tight">Campaña Salud <span class="text-indigo-300">Mamitas</span></h1>
-                <p class="text-indigo-100 mt-2 opacity-80">Validación instantánea de georeferencia y turnos.</p>
+                <h1 class="text-4xl font-extrabold tracking-tight">Campaña Odontológica <span class="text-indigo-300">Mamitas</span></h1>
+                <p class="text-indigo-100 mt-2 opacity-80">Reserva su cita para el miércoles 20 de mayo.</p>
             </div>
             <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         </div>
@@ -126,14 +126,14 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
+                            <input type="radio" name="turno" value="Mañana 7:30 am" class="peer hidden" checked>
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
                                 <span class="block text-3xl mb-1">☀️</span>
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Mañana</span>
                             </div>
                         </label>
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Tarde" class="peer hidden">
+                            <input type="radio" name="turno" value="Tarde 1:00 pm" class="peer hidden">
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
                                 <span class="block text-3xl mb-1">🌙</span>
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Tarde</span>
@@ -168,8 +168,8 @@
             if (dni.length < 8) return Swal.fire('DNI Requerido', 'Debe ingresar los 8 dígitos.', 'info');
 
             Swal.fire({
-                title: 'Buscando Georeferencia',
-                html: 'Accediendo a la base de datos central...',
+                title: 'Validando sus datos',
+                html: 'Espera un momento...',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
@@ -233,7 +233,7 @@
                 await Swal.fire({
                     icon: 'success',
                     title: '¡Cita Agendada!',
-                    text: 'Se ha registrado correctamente en su hoja de cálculo.',
+                    text: 'El día 20 de mayo su atención será con la Odontologa Aurora, primero deberá pasar por Triaje.',
                     confirmButtonColor: '#059669'
                 });
 
