@@ -3,152 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Citas - Validación DNI Madre</title>
+    <title>Sistema de Citas - Campaña Salud Mamitas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        body { background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%); }
+        .form-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="glass w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-white">
-        <div class="bg-blue-700 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold tracking-tight uppercase">Reserva de Citas</h1>
-            <p class="text-blue-100 text-sm">Búsqueda por DNI de la Madre</p>
+    <div class="form-card w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-white">
+        <!-- Encabezado basado en image_70d319.png -->
+        <div class="bg-indigo-600 p-8 text-white text-center">
+            <h1 class="text-3xl font-black tracking-tighter uppercase">Campaña Salud Mamitas</h1>
+            <p class="text-indigo-100 text-sm mt-1 font-medium italic">Gestión de Citas Georeferenciadas</p>
         </div>
 
         <form id="appointmentForm" class="p-8 space-y-6">
-            <!-- Buscador por DNI Madre -->
+            <!-- Campo de búsqueda -->
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2 uppercase">N° DNI MADRE</label>
-                <div class="flex gap-2">
+                <label class="block text-sm font-bold text-gray-700 mb-2 uppercase">Número de DNI Madre</label>
+                <div class="flex gap-3">
                     <input type="text" id="dniInput" required
-                        class="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-lg"
-                        placeholder="Ingrese 8 dígitos">
-                    <button type="button" onclick="buscarDatosMadre()" 
-                        class="bg-blue-700 hover:bg-blue-900 text-white px-5 rounded-xl transition-all shadow-lg">
-                        <i class="fas fa-search"></i>
+                        class="flex-1 px-5 py-4 rounded-2xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-0 outline-none transition-all text-xl font-mono"
+                        placeholder="00000000">
+                    <button type="button" onclick="buscarDatos()" 
+                        class="bg-indigo-600 hover:bg-indigo-800 text-white px-6 rounded-2xl transition-all shadow-lg active:scale-95">
+                        <i class="fas fa-search text-xl"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Datos automáticos -->
-            <div class="space-y-4 bg-blue-50 p-5 rounded-2xl border border-blue-100">
+            <!-- Panel de Información Recuperada -->
+            <div class="bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-200 space-y-4">
+                <h3 class="text-xs font-black text-indigo-500 uppercase tracking-widest mb-2">Datos Recuperados</h3>
+                
                 <div>
-                    <label class="block text-xs font-black text-blue-400 uppercase">Nombre de la Madre</label>
-                    <input type="text" id="nombreMadre" readonly class="w-full bg-transparent font-bold text-gray-800 outline-none py-1 border-b border-blue-200">
+                    <label class="block text-xs font-bold text-gray-400 uppercase">Nombre Completo de la Madre</label>
+                    <input type="text" id="nombreMadre" readonly 
+                        class="w-full bg-transparent font-bold text-gray-800 text-lg outline-none border-b-2 border-gray-100 py-1"
+                        placeholder="Pendiente de búsqueda...">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-black text-blue-400 uppercase">Celular</label>
-                        <input type="text" id="celular" readonly class="w-full bg-transparent font-bold text-gray-800 outline-none py-1 border-b border-blue-200">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Celular de Contacto</label>
+                        <input type="text" id="celular" readonly 
+                            class="w-full bg-transparent font-bold text-gray-800 outline-none border-b-2 border-gray-100 py-1"
+                            placeholder="---">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-blue-400 uppercase">Estado Civil</label>
-                        <input type="text" id="estadoCivil" readonly class="w-full bg-transparent font-bold text-gray-800 outline-none py-1 border-b border-blue-200">
+                        <!-- El Estado Civil se guarda internamente aquí, oculto para el usuario según tu solicitud -->
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Estado Civil (Interno)</label>
+                        <input type="text" id="estadoCivil" readonly 
+                            class="w-full bg-transparent font-bold text-gray-400 outline-none border-b-2 border-gray-100 py-1"
+                            placeholder="Cargando...">
                     </div>
                 </div>
             </div>
 
             <!-- Selección de Turno -->
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase">Seleccione Turno</label>
-                <select id="turno" class="w-full p-4 rounded-xl border border-gray-300 bg-white font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-600">
-                    <option value="Mañana">☀️ Mañana</option>
-                    <option value="Tarde">🌙 Tarde</option>
-                </select>
+                <label class="block text-sm font-bold text-gray-700 mb-3 uppercase">Seleccione su Turno</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="relative group">
+                        <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
+                        <div class="cursor-pointer text-center p-4 rounded-2xl border-2 border-gray-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                            <span class="block text-2xl mb-1">☀️</span>
+                            <span class="font-bold text-gray-600 peer-checked:text-indigo-700">MAÑANA</span>
+                        </div>
+                    </label>
+                    <label class="relative group">
+                        <input type="radio" name="turno" value="Tarde" class="peer hidden">
+                        <div class="cursor-pointer text-center p-4 rounded-2xl border-2 border-gray-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                            <span class="block text-2xl mb-1">🌙</span>
+                            <span class="font-bold text-gray-600 peer-checked:text-indigo-700">TARDE</span>
+                        </div>
+                    </label>
+                </div>
             </div>
 
+            <!-- Botón de Acción -->
             <button type="submit" id="btnEnviar" 
-                class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-black text-lg shadow-xl transition-all flex items-center justify-center gap-2">
-                <i class="fas fa-calendar-check"></i> CONFIRMAR CITA
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl font-black text-xl shadow-xl transform transition-all active:scale-95 flex items-center justify-center gap-3">
+                <i class="fas fa-calendar-plus"></i> REGISTRAR CITA
             </button>
         </form>
     </div>
 
     <script>
+        // URLs basadas en tus especificaciones
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbzdHC87qNYw0h0Fa6nIu05T8wjXCv20i-PZ1IKEYjdNMxnX8IOZnTGoCAkh9Pnux4gPxw/exec";
-        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbzMi99uWz8lNU2sAAet5McH3soVlDePdc2Rhgs13VgY4e1rP4ddCrKmvELeHgmEcbeLNQ/exec";
+        const URL_DESTINO = "https://script.google.com/macros/s/AKfycby-qFJ2zYYWBSCzv9phZik2WjGIkzAa2a2sti2gFxjrih6Y3PMLoa7s9JQM37r7BYzJcg/exec";
 
-        async function buscarDatosMadre() {
+        async function buscarDatos() {
             const dniBuscado = document.getElementById('dniInput').value.trim();
-            if (!dniBuscado) return Swal.fire('Error', 'Ingrese un DNI', 'warning');
+            if (dniBuscado.length < 8) {
+                return Swal.fire('DNI Incompleto', 'Por favor ingrese los 8 dígitos.', 'warning');
+            }
 
-            Swal.fire({ title: 'Consultando base de datos...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Consultando Registro...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             try {
                 const response = await fetch(URL_CONSULTA);
                 const lista = await response.json();
 
-                /* 
-                   AJUSTE CLAVE: 
-                   Como tu doGet() del Excel no tiene una propiedad "dniMadre", 
-                   pero el Excel tiene el DNI de la madre en la Columna B (data[i][1]), 
-                   tu script debe estar modificado o le estamos pidiendo al objeto que 
-                   busque en los campos disponibles. 
-                */
-                
-                // Buscamos si el DNI ingresado coincide con algún registro. 
-                // Nota: Si el doGet no envía el DNI de la madre explícitamente, 
-                // esta búsqueda fallará a menos que el DNI del hijo sea igual al de la madre.
-                const registro = lista.find(item => {
-                    // Aquí intentamos buscar por cualquier campo que pueda contener el DNI 
-                    // o que hayamos mapeado en el script de origen.
-                    return item.dniHijo === dniBuscado || item.celular === dniBuscado;
-                });
+                // Lógica de búsqueda avanzada: 
+                // Buscamos el valor en todos los campos, ya que el doGet no envía el DNI Madre separado.
+                const registro = lista.find(item => 
+                    Object.values(item).some(v => String(v).trim() === dniBuscado)
+                );
 
                 if (registro) {
-                    document.getElementById('nombreMadre').value = registro.nombreMadre;
-                    document.getElementById('celular').value = registro.celular;
-                    document.getElementById('estadoCivil').value = "Registrado"; // El doGet no envía Estado Civil, así que ponemos un valor genérico
-                    Swal.fire('¡Éxito!', 'Datos encontrados', 'success');
+                    document.getElementById('nombreMadre').value = registro.nombreMadre || "No especificado";
+                    document.getElementById('celular').value = registro.celular || "Sin número";
+                    
+                    /* 
+                       Como tu doGet() NO envía el estado civil, 
+                       aquí mapeamos un dato por defecto para que la columna D no quede vacía.
+                    */
+                    document.getElementById('estadoCivil').value = "Verificado"; 
+
+                    Swal.fire('¡Datos Encontrados!', `Bienvenida Sra. ${registro.nombreMadre}`, 'success');
                 } else {
                     Swal.fire({
                         icon: 'info',
                         title: 'No encontrado',
-                        text: 'El DNI no figura en la lista de georeferenciados. Verifique que tenga coordenadas en el Excel (Columna L).',
-                        confirmButtonColor: '#1d4ed8'
+                        text: 'Verifique que el DNI tenga Georeferencia (Columna L) en la base principal.',
+                        confirmButtonColor: '#4f46e5'
                     });
                 }
             } catch (err) {
-                Swal.fire('Error', 'No se pudo obtener la información.', 'error');
+                Swal.fire('Error de Conexión', 'No se pudo acceder a la base de datos de origen.', 'error');
             }
         }
 
         document.getElementById('appointmentForm').onsubmit = async (e) => {
             e.preventDefault();
-            const nombre = document.getElementById('nombreMadre').value;
-            if (!nombre) return Swal.fire('Error', 'Primero debe buscar y encontrar un DNI', 'error');
+            
+            if (!document.getElementById('nombreMadre').value || document.getElementById('nombreMadre').value.includes("Pendiente")) {
+                return Swal.fire('Atención', 'Primero debe buscar un DNI válido.', 'warning');
+            }
 
             const btn = document.getElementById('btnEnviar');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> REGISTRANDO...';
 
             const payload = {
                 dni: document.getElementById('dniInput').value,
-                nombre: nombre,
+                nombre: document.getElementById('nombreMadre').value,
                 estadoCivil: document.getElementById('estadoCivil').value,
                 celular: document.getElementById('celular').value,
-                turno: document.getElementById('turno').value
+                turno: document.querySelector('input[name="turno"]:checked').value
             };
 
             try {
+                // Envío a la URL de destino final
                 await fetch(URL_DESTINO, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(payload)
                 });
-                Swal.fire('¡Registrado!', 'La cita se guardó correctamente', 'success');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Cita Confirmada!',
+                    text: 'Los datos se guardaron correctamente en la hoja CampañaSaludMamitas.',
+                    confirmButtonColor: '#4f46e5'
+                });
+
+                // Limpiar formulario
                 document.getElementById('appointmentForm').reset();
                 document.getElementById('nombreMadre').value = "";
+                document.getElementById('celular').value = "";
+                document.getElementById('estadoCivil').value = "";
+
             } catch (error) {
-                Swal.fire('Error', 'No se pudo conectar con el destino', 'error');
+                Swal.fire('Error al Guardar', 'No se pudo enviar la información al destino.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-calendar-check"></i> CONFIRMAR CITA';
+                btn.innerHTML = '<i class="fas fa-calendar-plus"></i> REGISTRAR CITA';
             }
         };
     </script>
