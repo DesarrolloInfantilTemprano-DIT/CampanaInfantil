@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaña Odontológica: Mamitas</title>
+    <title>Campaña CRED Especializado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -48,8 +48,8 @@
                 <div class="flex items-center gap-3 mb-2">
                     <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">Módulo de Citas</span>
                 </div>
-                <h1 class="text-4xl font-extrabold tracking-tight">Campaña Odontológica <span class="text-indigo-300">Mamitas</span></h1>
-                <p class="text-indigo-100 mt-2 opacity-80">Reserva su cita para el miércoles 20 de mayo.</p>
+                <h1 class="text-4xl font-extrabold tracking-tight">Campaña Infantil: 19 de Mayo <span class="text-indigo-300">Niños menores de 3 años</span></h1>
+                <p class="text-indigo-100 mt-2 opacity-80">Paquete de Atención: Descarte problemas del Desarrollo + Odontopediatría .</p>
             </div>
             <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         </div>
@@ -64,7 +64,7 @@
                 </div>
                 
                 <div class="relative group">
-                    <label class="text-xs font-black text-indigo-500 uppercase mb-2 block ml-1">Registre el DNI del paciente </label>
+                    <label class="text-xs font-black text-indigo-500 uppercase mb-2 block ml-1">Registre el DNI del niño o niña menor de tres años </label>
                     <div class="flex gap-3">
                         <div class="relative flex-1">
                             <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
@@ -84,7 +84,7 @@
             <div id="resultPanel" class="hidden animate-fade-in space-y-6">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">2</div>
-                    <h2 class="font-bold text-gray-800 uppercase tracking-wide">Datos del Paciente</h2>
+                    <h2 class="font-bold text-gray-800 uppercase tracking-wide">Datos del Niño o Niña menor de tres años</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -124,7 +124,7 @@
                         <h2 class="font-bold text-gray-800 uppercase tracking-wide">Asignación de Turno</h2>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4"> aqui para que solo se muestre un boton de turno mañana cambie grid-cols-2 
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
@@ -132,7 +132,7 @@
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Mañana</span>
                             </div>
                         </label>
-                        <label class="relative cursor-pointer group">
+                        <label class="relative cursor-pointer group hidden">  aqui para que se oculte TARDE agregue hidden
                             <input type="radio" name="turno" value="Tarde" class="peer hidden">
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
                                 <span class="block text-3xl mb-1">☀️</span>
@@ -261,7 +261,7 @@
                     await Swal.fire({
                         icon: 'success',
                         title: '¡Cita Agendada!',
-                        text: 'El día 20 de mayo su atención será con la Odontologa Aurora. Mañana: 7:00 am / Tarde: 1:00 pm.',
+                        text: 'El día 19 de mayo. _ : Flujo de Atención ----PRIMERO: TRIAJE CRED,      SEGUNDO: Consultorio de Desarrollo, y     TERCERO: Consultorio de Odontopediatría----. ',
                         confirmButtonColor: '#059669'
                     });
 
