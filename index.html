@@ -251,8 +251,8 @@
                 <div class="inline-flex w-16 h-16 bg-white rounded-2xl items-center justify-center shadow-md mb-4 text-indigo-500">
                     <i class="fas fa-fingerprint text-3xl"></i>
                 </div>
-                <p class="text-sm font-semibold text-slate-600">Consulte el DNI para desbloquear el panel clínico.</p>
-                <p class="text-xs text-slate-400 mt-1">Válido para bases actualizadas en tiempo real.</p>
+                <p class="text-sm font-semibold text-slate-600">Consulte el DNI</p>
+                <p class="text-xs text-slate-400 mt-1">Verificando en tiempo real.</p>
             </div>
 
         </form>
@@ -313,10 +313,10 @@
                         title: 'DNI No Identificado',
                         html: `
                             <div class="text-center p-2">
-                                <p class="mb-4 text-slate-600 text-sm">No logramos ubicar el registro solicitado. Para agendar su cita georreferenciada presione abajo:</p>
+                                <p class="mb-4 text-slate-600 text-sm">No logramos ubicar el registro solicitado. Actualice en el botón abajo:</p>
                                 <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" target="_blank"
                                    class="inline-block bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline shadow-md">
-                                    <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME AHORA
+                                    <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME
                                 </a>
                             </div>
                         `,
@@ -417,7 +417,7 @@
                         if(estadoCalculado === "Óptimo") {
                             msgTexto = '¡Felicitaciones! El niño presenta excelentes hábitos higiénicos del sueño.';
                         } else if(estadoCalculado === "Alerta" || estadoCalculado === "Crítico") {
-                            msgTexto = '¡Atención Clínica! Las horas registradas están fuera de los rangos normales recomendados. Se sugiere derivación a enfermería.';
+                            msgTexto = '¡Atención Clínica! Las horas registradas están fuera de los rangos normales recomendados.';
                             iconColor = 'error'; 
                             btnColor = '#ef4444'; // Rojo Intenso
                             titleText = '¡Valores Fuera de Rango!';
