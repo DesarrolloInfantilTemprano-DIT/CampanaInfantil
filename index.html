@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaña CRED Especializado</title>
+    <title>Salud Especializado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -42,7 +42,6 @@
 <body class="flex items-center justify-center p-4 py-10">
 
     <div class="glass-card w-full max-w-2xl rounded-[2.5rem] overflow-hidden">
-        <!-- Header -->
         <div class="relative bg-indigo-700 p-10 text-white overflow-hidden">
             <div class="relative z-10">
                 <div class="flex items-center gap-3 mb-2">
@@ -57,7 +56,6 @@
 
         <form id="appointmentForm" class="p-10 space-y-8">
             
-            <!-- SECCIÓN 1: BÚSQUEDA -->
             <div class="space-y-4">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">1</div>
@@ -81,7 +79,6 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: RESULTADOS -->
             <div id="resultPanel" class="hidden animate-fade-in space-y-6">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">2</div>
@@ -117,15 +114,55 @@
 
                 <input type="hidden" id="dni_madre_final">
                 <input type="hidden" id="estado_civil" value="Georeferenciado">
+                
+                <input type="hidden" id="sueno_horas_data" value="No evaluado">
+                <input type="hidden" id="sueno_estado_data" value="No evaluado">
+                <input type="hidden" id="sueno_alerta_data" value="No">
 
-                <!-- SECCIÓN 3: TURNO -->
+                <div class="pt-4 border-t border-dashed border-gray-200">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                            <i class="fas fa-moon text-[10px]"></i>
+                        </div>
+                        <h2 class="font-bold text-gray-800 uppercase tracking-wide">Evaluación de Hábitos de Sueño</h2>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-slate-50 to-indigo-50/30 border border-indigo-100 p-6 rounded-3xl space-y-4">
+                        <p class="text-xs text-slate-500 font-semibold">Completa los datos del menor para calcular su estado higiénico del sueño:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-black text-indigo-600 uppercase mb-1 block ml-1">Rango de Edad</label>
+                                <select id="suenoEdad" class="w-full p-3 rounded-xl border border-gray-200 font-bold text-gray-700 bg-white outline-none focus:border-indigo-500 text-sm">
+                                    <option value="0-3m">0 a 3 meses</option>
+                                    <option value="4-11m">4 a 11 meses</option>
+                                    <option value="1-2a">1 a 2 años</option>
+                                    <option value="3a">3 años</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-indigo-600 uppercase mb-1 block ml-1">Horas Diarias que Duerme</label>
+                                <input type="number" id="suenoHorasInput" min="1" max="24" step="0.5" placeholder="Ej. 11.5"
+                                    class="w-full p-3 rounded-xl border border-gray-200 font-bold text-gray-700 bg-white outline-none focus:border-indigo-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 pt-2">
+                            <input type="checkbox" id="suenoSintomas" class="w-4 h-4 text-indigo-600 border-gray-300 rounded mt-0.5 accent-indigo-600">
+                            <label for="suenoSintomas" class="text-xs font-medium text-slate-600 cursor-pointer select-none">
+                                El niño presenta ronquidos recurrentes, respiración bucal o pausas al respirar mientras duerme.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="pt-4">
                     <div class="flex items-center gap-2 mb-4">
                         <div class="step-badge w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold">3</div>
-                        <h2 class="font-bold text-gray-800 uppercase tracking-wide">Asignación de Turno</h2>
+                        <h2 class="font-bold text-gray-800 uppercase tracking-wide">Asignación de Turno (Solo para citas)</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-4"> aqui para que solo se muestre un boton de turno mañana cambie grid-cols-2 
+                    <div class="grid grid-cols-1 gap-4"> 
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
@@ -133,7 +170,7 @@
                                 <span class="block font-bold text-gray-700 peer-checked:text-indigo-700">Mañana</span>
                             </div>
                         </label>
-                        <label class="relative cursor-pointer group hidden">  aqui para que se oculte TARDE agregue hidden
+                        <label class="relative cursor-pointer group hidden">
                             <input type="radio" name="turno" value="Tarde" class="peer hidden">
                             <div class="p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all group-hover:border-gray-200">
                                 <span class="block text-3xl mb-1">☀️</span>
@@ -143,10 +180,23 @@
                     </div>
                 </div>
 
-                <button type="submit" id="btnEnviar" 
-                    class="w-full bg-indigo-600 hover:bg-indigo-800 text-white py-5 rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-200 transition-all transform active:scale-95 flex items-center justify-center gap-3">
-                    <i class="fas fa-calendar-check"></i> CONFIRMAR CITA
-                </button>
+                <div class="pt-4 space-y-4">
+                    <button type="button" id="btnCitaCompleta" onclick="procesarFormularioFinal('Cita Completa')"
+                        class="w-full bg-indigo-600 hover:bg-indigo-800 text-white py-5 rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-200 transition-all transform active:scale-95 flex items-center justify-center gap-3">
+                        <i class="fas fa-calendar-check"></i> AGENDAR CITA + EVALUAR SUEÑO
+                    </button>
+
+                    <div class="flex items-center my-2">
+                        <div class="flex-1 border-t border-gray-200"></div>
+                        <span class="mx-4 text-[10px] font-black text-gray-400 uppercase tracking-wider">O TAMBIÉN PUEDES</span>
+                        <div class="flex-1 border-t border-gray-200"></div>
+                    </div>
+
+                    <button type="button" id="btnSoloSueno" onclick="procesarFormularioFinal('Solo Sueño')"
+                        class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-[2rem] font-bold text-base shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fas fa-moon"></i> SOLO EVALUAR SUEÑO (SIN CITA)
+                    </button>
+                </div>
             </div>
 
             <div id="initialHelp" class="text-center py-10 text-gray-400">
@@ -159,7 +209,15 @@
 
     <script>
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbyVD5n1k-FOeuEnfXXmqsiuPB1ud1L8rhcEyxSyQs_a0Sqdtn-quxPP_2MEwO4_UIGaKQ/exec";
-        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbyrXMVhvWlQn48zZGiklbn0EP9MgvV3WxoWOiIuEdlEXIQFtLh-k1qWRwPcx_t53eC6JA/exec";
+        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbzL4syve-b5CkTP9wXr12tEGofi9Z1nVyvlkaUklhYajOLUj48-I4qlF1YHTl63WIFQBg/exec";
+
+        // Reglas de la OMS y Guías Clínicas de Pediatría para evaluación de horas de sueño
+        const baseReglasSueno = {
+            "0-3m":  { min: 14, max: 17, minCritico: 11, maxCritico: 19 },
+            "4-11m": { min: 12, max: 15, minCritico: 10, maxCritico: 18 },
+            "1-2a":  { min: 11, max: 14, minCritico: 9,  maxCritico: 16 },
+            "3a":    { min: 10, max: 13, minCritico: 8,  maxCritico: 14 }
+        };
 
         async function buscarDatosProfesional() {
             const dni = document.getElementById('dniInput').value.trim();
@@ -176,22 +234,19 @@
                 const response = await fetch(URL_CONSULTA);
                 const data = await response.json();
 
-                // Lógica de búsqueda condicional por columna
                 let registroEncontrado = null;
                 let nombreA_Mostrar = "";
 
-                // 1. Intentar buscar en Columna B (dniMadre)
                 const busquedaMadre = data.find(item => String(item.dniMadre).trim() === dni);
                 
                 if (busquedaMadre) {
                     registroEncontrado = busquedaMadre;
-                    nombreA_Mostrar = busquedaMadre.nombreMadre; // Columna C
+                    nombreA_Mostrar = busquedaMadre.nombreMadre; 
                 } else {
-                    // 2. Si no está en B, buscar en Columna H (dniHijo)
                     const busquedaHijo = data.find(item => String(item.dniHijo).trim() === dni);
                     if (busquedaHijo) {
                         registroEncontrado = busquedaHijo;
-                        nombreA_Mostrar = busquedaHijo.nombreHijo; // Columna I
+                        nombreA_Mostrar = busquedaHijo.nombreHijo; 
                     }
                 }
 
@@ -213,7 +268,7 @@
                                 <p class="mb-5 text-gray-600">No te preocupes, puedes registrarte junto a tus hijos, activando tu ubicación y haciendo clic abajo. ¡Es rápido y sencillo!</p>
                                 <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" 
                                    class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline">
-                                   <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME AHORA
+                                    <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME AHORA
                                 </a>
                             </div>
                         `,
@@ -227,20 +282,65 @@
             }
         }
 
-        document.getElementById('appointmentForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviar');
-            const turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> VALIDANDO CUPOS...';
+        // Procesa internamente los cálculos médicos del sueño antes de despachar
+        function calcularDatosSuenoInterno() {
+            const edad = document.getElementById('suenoEdad').value;
+            const horasInput = document.getElementById('suenoHorasInput').value.trim();
+            const sintomas = document.getElementById('suenoSintomas').checked;
+
+            if (horasInput === "" || isNaN(parseFloat(horasInput))) {
+                document.getElementById('sueno_horas_data').value = "No evaluado";
+                document.getElementById('sueno_estado_data').value = "No evaluado";
+                document.getElementById('sueno_alerta_data').value = "No";
+                return;
+            }
+
+            const hours = parseFloat(horasInput);
+            const regla = baseReglasSueno[edad];
+            let estado = "Óptimo";
+
+            if (hours < regla.minCritico || hours > regla.maxCritico) {
+                estado = "Crítico";
+            } else if (hours < regla.min || hours > regla.max) {
+                estado = "Alerta";
+            }
+
+            document.getElementById('sueno_horas_data').value = hours;
+            document.getElementById('sueno_estado_data').value = estado;
+            document.getElementById('sueno_alerta_data').value = sintomas ? "Sí" : "No";
+        }
+
+        // Función unificada que maneja el envío condicional según el botón presionado
+        async function procesarFormularioFinal(tipoRegistro) {
+            calcularDatosSuenoInterno();
+
+            const dni = document.getElementById('dni_madre_final').value;
+            if (!dni) {
+                return Swal.fire('Atención', 'Por favor, busque un DNI válido primero.', 'warning');
+            }
+
+            let turnoSolicitado = "Solo Consulta de Sueño";
+            let botonActivo = document.getElementById('btnSoloSueno');
+            let textoOriginal = botonActivo.innerHTML;
+
+            if (tipoRegistro === 'Cita Completa') {
+                turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
+                botonActivo = document.getElementById('btnCitaCompleta');
+                textoOriginal = botonActivo.innerHTML;
+            }
+
+            botonActivo.disabled = true;
+            botonActivo.innerHTML = '<i class="fas fa-sync fa-spin"></i> PROCESANDO...';
 
             const payload = {
-                dni_madre: document.getElementById('dni_madre_final').value,
+                dni_madre: dni,
                 nombre_madre: document.getElementById('nombre_madre').value,
                 estado_civil: document.getElementById('estado_civil').value,
                 celular: document.getElementById('celular').value,
-                turno: turnoSolicitado
+                turno: turnoSolicitado,
+                sueno_horas: document.getElementById('sueno_horas_data').value,
+                sueno_estado: document.getElementById('sueno_estado_data').value,
+                sueno_alerta: document.getElementById('sueno_alerta_data').value
             };
 
             try {
@@ -259,25 +359,52 @@
                         confirmButtonColor: '#f59e0b'
                     });
                 } else {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: '¡Cita Agendada!',
-                        text: 'El día 19 de mayo. _ : Flujo de Atención ----PRIMERO: TRIAJE CRED,      SEGUNDO: Consultorio de Desarrollo, y     TERCERO: Consultorio de Odontopediatría----. ',
-                        confirmButtonColor: '#059669'
-                    });
+                    if (tipoRegistro === 'Solo Sueño') {
+                        let msgTexto = 'Los datos se registraron correctamente.';
+                        const estadoCalculado = document.getElementById('sueno_estado_data').value;
+                        
+                        if(estadoCalculado === "Óptimo") {
+                            msgTexto = '¡Felicitaciones! El niño presenta excelentes hábitos de sueño.';
+                        } else if(estadoCalculado === "Alerta" || estadoCalculado === "Crítico") {
+                            msgTexto = 'Se registraron desvíos en las horas de sueño. Sugerimos consultar pautas higiénicas con enfermería.';
+                        }
 
-                    document.getElementById('appointmentForm').reset();
-                    document.getElementById('resultPanel').classList.add('hidden');
-                    document.getElementById('initialHelp').classList.remove('hidden');
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '¡Tamizaje Guardado!',
+                            text: msgTexto + ' Datos guardados satisfactoriamente.',
+                            confirmButtonColor: '#10b981'
+                        });
+                    } else {
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '¡Cita Agendada!',
+                            text: 'El día 19 de mayo. Flujo de Atención: PRIMERO: TRIAJE CRED, SEGUNDO: Consultorio de Desarrollo, y TERCERO: Consultorio de Odontopediatría.',
+                            confirmButtonColor: '#059669'
+                        });
+                    }
+                    // Limpieza general tras envío exitoso
+                    limpiarFormularioCompleto();
                 }
 
             } catch (err) {
-                Swal.fire('Aviso', 'Registro enviado. Verifique su conexión si no recibe confirmación.', 'info');
+                Swal.fire('Aviso', 'Información enviada. Verifique el panel en su hoja de cálculo.', 'info');
+                limpiarFormularioCompleto();
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-calendar-check"></i> CONFIRMAR REGISTRO';
+                botonActivo.disabled = false;
+                botonActivo.innerHTML = textoOriginal;
             }
-        };
+        }
+
+        function limpiarFormularioCompleto() {
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('resultPanel').classList.add('hidden');
+            document.getElementById('initialHelp').classList.remove('hidden');
+            // Reestablecer inputs ocultos de control clínicos
+            document.getElementById('sueno_horas_data').value = "No evaluado";
+            document.getElementById('sueno_estado_data').value = "No evaluado";
+            document.getElementById('sueno_alerta_data').value = "No";
+        }
     </script>
 </body>
 </html>
