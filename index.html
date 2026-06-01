@@ -90,8 +90,7 @@
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-purple-200 text-2xl font-semibold opacity-90 block mt-2">Niños menores de 5 años</span>
                 </h1>
                 <div class="pt-2 flex flex-col gap-1 text-sm text-indigo-100/90 font-medium border-t border-white/10">
-                    <p class="flex items-center gap-2"><i class="far fa-calendar-alt opacity-70"></i> <strong>Fecha:</strong> Pendiente | <i class="far fa-clock opacity-70"></i> <strong>Hora:</strong> 7:30 am</p>
-                    <p class="flex items-center gap-2"><i class="fas fa-stethoscope opacity-70"></i> <strong>Paquete:</strong> Medir horario de sueño</p>
+                    <p class="flex items-center gap-2"><i class="far fa-calendar-alt opacity-70"></i> <strong>Fecha:</strong> Programada | <i class="far fa-clock opacity-70"></i> <strong>Hora:</strong> 7:30 am</p>
                 </div>
             </div>
             <div class="absolute -top-12 -right-12 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl"></div>
@@ -161,56 +160,14 @@
 
                 <input type="hidden" id="dni_madre_final">
                 <input type="hidden" id="estado_civil" value="Georeferenciado">
-                <input type="hidden" id="sueno_horas_data" value="No evaluado">
-                <input type="hidden" id="sueno_estado_data" value="No evaluado">
-                <input type="hidden" id="sueno_alerta_data" value="No">
 
                 <div class="pt-6 border-t border-dashed border-slate-200">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="step-badge w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-200">
-                            <i class="fas fa-moon text-[11px]"></i>
-                        </div>
-                        <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">Evaluación de Hábitos de Sueño</h2>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/80 p-6 rounded-[2rem] shadow-sm space-y-4">
-                        <p class="text-xs text-slate-500 font-semibold flex items-center gap-2">
-                            <i class="fas fa-info-circle text-indigo-500"></i> Complete los datos según la última noche del menor para el tamizaje higiénico:
-                        </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-extrabold text-indigo-600 uppercase mb-1.5 block ml-1 tracking-wide">Rango de Edad</label>
-                                <select id="suenoEdad" class="w-full p-3.5 rounded-xl border-2 border-slate-200 font-bold text-slate-700 bg-white outline-none focus:border-indigo-500 text-sm transition-all">
-                                    <option value="0-3m">0 a 3 meses</option>
-                                    <option value="4-11m">4 a 11 meses</option>
-                                    <option value="1-2a">1 a 2 años</option>
-                                    <option value="3a">3 y 4 años</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-extrabold text-indigo-600 uppercase mb-1.5 block ml-1 tracking-wide">Horas de sueño (Solo de la noche evaluada)</label>
-                                <input type="number" id="suenoHorasInput" min="1" max="24" step="0.5" placeholder="Ej. 9.5"
-                                    class="w-full p-3.5 rounded-xl border-2 border-slate-200 font-bold text-slate-700 bg-white outline-none focus:border-indigo-500 text-sm transition-all">
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3 pt-2">
-                            <input type="checkbox" id="suenoSintomas" class="w-4 h-4 text-indigo-600 border-slate-300 rounded mt-0.5 accent-indigo-600 cursor-pointer">
-                            <label for="suenoSintomas" class="text-xs font-medium text-slate-600 cursor-pointer select-none leading-relaxed">
-                                El niño presenta ronquidos recurrentes, respiración bucal o pausas al respirar mientras duerme.
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <div class="flex items-center gap-3 mb-4">
                         <div class="step-badge w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-200">3</div>
-                        <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">No separe Turno, sólo click en Evluar Sueño</h2>
+                        <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">Selección de Turno</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-3"> 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3"> 
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
                             <div class="p-4 rounded-2xl border-2 border-slate-100 bg-white/50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 transition-all group-hover:border-slate-200 shadow-sm flex items-center justify-center gap-3">
@@ -218,8 +175,8 @@
                                 <span class="font-bold text-slate-700 peer-checked:text-indigo-700">Turno Mañana</span>
                             </div>
                         </label>
-                        <label class="relative cursor-pointer group hidden">
-                            <input type="radio" name="turno" value="Tarde" class="peer hidden"checked>
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="turno" value="Tarde" class="peer hidden">
                             <div class="p-4 rounded-2xl border-2 border-slate-100 bg-white/50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 transition-all group-hover:border-slate-200 shadow-sm flex items-center justify-center gap-3">
                                 <span class="text-2xl">☀️</span>
                                 <span class="font-bold text-slate-700 peer-checked:text-indigo-700">Turno Tarde</span>
@@ -228,21 +185,10 @@
                     </div>
                 </div>
 
-                <div class="pt-4 space-y-4">
-                    <button type="button" id="btnCitaCompleta" onclick="procesarFormularioFinal('Cita Completa')"
+                <div class="pt-4">
+                    <button type="button" id="btnCitaCompleta" onclick="procesarFormularioFinal()"
                         class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4.5 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all transform active:scale-[0.99] flex items-center justify-center gap-3">
-                        <i class="fas fa-calendar-check"></i> NO PRESIONE ESTE BOTÓN (GUARDAR CITA)
-                    </button>
-
-                    <div class="flex items-center my-3">
-                        <div class="flex-1 border-t border-slate-200"></div>
-                        <span class="mx-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Alternativa</span>
-                        <div class="flex-1 border-t border-slate-200"></div>
-                    </div>
-
-                    <button type="button" id="btnSoloSueno" onclick="procesarFormularioFinal('Solo Sueño')"
-                        class="w-full bg-slate-800 hover:bg-slate-900 text-white py-4 rounded-2xl font-semibold text-sm shadow-md transition-all transform active:scale-[0.99] flex items-center justify-center gap-2">
-                        <i class="fas fa-moon"></i> EVALUAR SUEÑO DEL NIÑO (A)
+                        <i class="fas fa-calendar-check"></i> AGENDAR CITA MÉDICA
                     </button>
                 </div>
             </div>
@@ -261,13 +207,6 @@
     <script>
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbyVD5n1k-FOeuEnfXXmqsiuPB1ud1L8rhcEyxSyQs_a0Sqdtn-quxPP_2MEwO4_UIGaKQ/exec";
         const URL_DESTINO = "https://script.google.com/macros/s/AKfycbzL4syve-b5CkTP9wXr12tEGofi9Z1nVyvlkaUklhYajOLUj48-I4qlF1YHTl63WIFQBg/exec";
-
-        const baseReglasSueno = {
-            "0-3m":  { min: 14, max: 17, minCritico: 11, maxCritico: 19 },
-            "4-11m": { min: 12, max: 15, minCritico: 10, maxCritico: 18 },
-            "1-2a":  { min: 11, max: 14, minCritico: 9,  maxCritico: 16 },
-            "3a":    { min: 10, max: 13, minCritico: 8,  maxCritico: 14 }
-        };
 
         async function buscarDatosProfesional() {
             const dni = document.getElementById('dniInput').value.trim();
@@ -316,7 +255,7 @@
                                 <p class="mb-4 text-slate-600 text-sm">No logramos ubicar el registro solicitado. Actualice en el botón abajo:</p>
                                 <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" target="_blank"
                                    class="inline-block bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline shadow-md">
-                                    <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME
+                                     <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME
                                 </a>
                             </div>
                         `,
@@ -330,50 +269,15 @@
             }
         }
 
-        function calcularDatosSuenoInterno() {
-            const edad = document.getElementById('suenoEdad').value;
-            const horasInput = document.getElementById('suenoHorasInput').value.trim();
-            const sintomas = document.getElementById('suenoSintomas').checked;
-
-            if (horasInput === "" || isNaN(parseFloat(horasInput))) {
-                document.getElementById('sueno_horas_data').value = "No evaluado";
-                document.getElementById('sueno_estado_data').value = "No evaluado";
-                document.getElementById('sueno_alerta_data').value = "No";
-                return;
-            }
-
-            const hours = parseFloat(horasInput);
-            const regla = baseReglasSueno[edad];
-            let estado = "Óptimo";
-
-            if (hours < regla.minCritico || hours > regla.maxCritico) {
-                estado = "Crítico";
-            } else if (hours < regla.min || hours > regla.max) {
-                estado = "Alerta";
-            }
-
-            document.getElementById('sueno_horas_data').value = hours;
-            document.getElementById('sueno_estado_data').value = estado;
-            document.getElementById('sueno_alerta_data').value = sintomas ? "Sí" : "No";
-        }
-
-        async function procesarFormularioFinal(tipoRegistro) {
-            calcularDatosSuenoInterno();
-
+        async function procesarFormularioFinal() {
             const dni = document.getElementById('dni_madre_final').value;
             if (!dni) {
                 return Swal.fire('Atención', 'Por favor, busque un DNI válido primero.', 'warning');
             }
 
-            let turnoSolicitado = "Solo Consulta de Sueño";
-            let botonActivo = document.getElementById('btnSoloSueno');
-            let textoOriginal = botonActivo.innerHTML;
-
-            if (tipoRegistro === 'Cita Completa') {
-                turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
-                botonActivo = document.getElementById('btnCitaCompleta');
-                textoOriginal = botonActivo.innerHTML;
-            }
+            const turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
+            const botonActivo = document.getElementById('btnCitaCompleta');
+            const textoOriginal = botonActivo.innerHTML;
 
             botonActivo.disabled = true;
             botonActivo.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> PROCESANDO...';
@@ -384,9 +288,10 @@
                 estado_civil: document.getElementById('estado_civil').value,
                 celular: document.getElementById('celular').value,
                 turno: turnoSolicitado,
-                sueno_horas: document.getElementById('sueno_horas_data').value,
-                sueno_estado: document.getElementById('sueno_estado_data').value,
-                sueno_alerta: document.getElementById('sueno_alerta_data').value
+                // Parámetros de sueño neutralizados por compatibilidad con la hoja de cálculo receptora
+                sueno_horas: "No evaluado",
+                sueno_estado: "No evaluado",
+                sueno_alerta: "No"
             };
 
             try {
@@ -405,51 +310,12 @@
                         confirmButtonColor: '#f59e0b'
                     });
                 } else {
-                    const estadoCalculado = document.getElementById('sueno_estado_data').value;
-
-                    if (tipoRegistro === 'Solo Sueño') {
-                        let msgTexto = 'Los datos se registraron correctamente.';
-                        let iconColor = 'success';
-                        let btnColor = '#10b981'; 
-                        let titleText = '¡Tamizaje Guardado!';
-
-                        // MEJORA REQUERIDA: Mensaje fuera de lo normal en Rojo dinámico
-                        if(estadoCalculado === "Óptimo") {
-                            msgTexto = '¡Felicitaciones! El niño presenta excelentes hábitos higiénicos del sueño.';
-                        } else if(estadoCalculado === "Alerta" || estadoCalculado === "Crítico") {
-                            msgTexto = '¡Atención Clínica! Las horas registradas están fuera de los rangos normales recomendados.';
-                            iconColor = 'error'; 
-                            btnColor = '#ef4444'; // Rojo Intenso
-                            titleText = '¡Valores Fuera de Rango!';
-                        }
-
-                        await Swal.fire({
-                            icon: iconColor,
-                            title: titleText,
-                            text: msgTexto,
-                            confirmButtonColor: btnColor
-                        });
-                    } else {
-                        // Cita Completa con lógica semafórica clínica
-                        let btnColorCita = '#4f46e5'; 
-                        let iconCita = 'success';
-                        let tituloCita = '¡Cita Médica Agendada!';
-                        let complementoTexto = '';
-
-                        if (estadoCalculado === "Alerta" || estadoCalculado === "Crítico") {
-                            btnColorCita = '#ef4444'; // Rojo si hay desvío clínico
-                            iconCita = 'warning';
-                            tituloCita = 'Cita Agendada con Observación';
-                            complementoTexto = '\n\n⚠️ ADVERTENCIA: Se han detectado hábitos de sueño anormales en el menor.';
-                        }
-
-                        await Swal.fire({
-                            icon: iconCita,
-                            title: tituloCita,
-                            text: 'El día 19 de mayo. Flujo de Atención programado: PRIMERO: TRIAJE CRED, SEGUNDO: Consultorio de Desarrollo, y TERCERO: Consultorio de Odontopediatría.' + complementoTexto,
-                            confirmButtonColor: btnColorCita
-                        });
-                    }
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Cita Médica Agendada!',
+                        text: 'El día 19 de mayo. Flujo de Atención programado: PRIMERO: TRIAJE CRED, SEGUNDO: Consultorio de Desarrollo, y TERCERO: Consultorio de Odontopediatría.',
+                        confirmButtonColor: '#4f46e5'
+                    });
                     limpiarFormularioCompleto();
                 }
 
@@ -466,9 +332,6 @@
             document.getElementById('appointmentForm').reset();
             document.getElementById('resultPanel').classList.add('hidden');
             document.getElementById('initialHelp').classList.remove('hidden');
-            document.getElementById('sueno_horas_data').value = "No evaluado";
-            document.getElementById('sueno_estado_data').value = "No evaluado";
-            document.getElementById('sueno_alerta_data').value = "No";
         }
     </script>
 </body>
