@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de Citas 🎈</title>
+    <title>Módulo 2026 🎈</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -148,7 +149,7 @@
                                 class="w-full p-3.5 rounded-xl bg-white border-2 border-slate-200 font-extrabold text-slate-800 outline-none">
                         </div>
 
-                        <!-- Campos ocultos pero funcionales para guardar la información completa internamente -->
+                        <!-- Campos ocultos pero funcionales para conservar la información -->
                         <div style="display:none;">
                             <input type="text" id="nombre_paciente">
                             <input type="text" id="fecha_nacimiento">
@@ -230,7 +231,6 @@
                 });
             }
 
-            // Contador regresivo de 20 a 0 segundos sin mencionar la palabra Censo
             let segundosRestantes = 20;
             Swal.fire({
                 title: 'Buscando información...',
@@ -284,8 +284,6 @@
 
                 const rawFNac  = registroEncontrado.fn || null;
                 const nombreCompleto = registroEncontrado.nombreB || "PACIENTE NIÑO";
-                
-                // Extraer solo el apellido paterno (primera palabra de los apellidos y nombres)
                 const apellidoPaterno = nombreCompleto.trim().split(' ')[0] || nombreCompleto;
 
                 const paciente = {
@@ -297,9 +295,21 @@
                     edadTexto: rawFNac ? "Seleccione Fecha Cita para calcular" : "No disponible"
                 };
 
+                // VALIDACIÓN DE NÚMERO DE WHATSAPP VÁLIDO (Debe tener al menos 9 dígitos de celular)
+                const celularLimpio = paciente.celular.replace(/\D/g, '');
+                if (!celularLimpio || celularLimpio.length < 9) {
+                    document.getElementById('resultPanel').classList.add('hidden');
+                    document.getElementById('initialHelp').classList.remove('hidden');
+
+                    return Swal.fire({
+                        icon: 'warning',
+                        title: 'Actualización requerida',
+                        text: 'El número celular registrado no es válido o no cuenta con WhatsApp. Debe actualizar ese dato antes de continuar.',
+                        confirmButtonColor: '#06b6d4'
+                    });
+                }
+
                 fechaNacimientoRaw = paciente.rawFNac;
-                
-                // Asignar valores visibles y ocultos
                 document.getElementById('apellido_paterno').value = paciente.apellidoPaterno;
                 document.getElementById('nombre_paciente').value = paciente.nombreCompleto;
                 document.getElementById('fecha_nacimiento').value = paciente.fechaNac;
@@ -443,7 +453,6 @@
                 });
             }
 
-            // Payload completo que incluye la información completa y el número de celular registrado
             const payload = {
                 dni_paciente: dni,
                 nombre_paciente: nombre,
@@ -474,12 +483,34 @@
                         confirmButtonColor: '#06b6d4'
                     });
                 } else if (result.status === "success") {
+                    // Formatear número para WhatsApp (asumiendo código de país +51 para Perú si no lo incluye)
+                    let numWhatsApp = cel.replace(/\D/g, '');
+                    if (numWhatsApp.length === 9) {
+                        numWhatsApp = '51' + numWhatsApp;
+                    }
+
+                    // Mensaje estructurado para WhatsApp
+                    const mensajeWa = `🧸 *¡CITA CONFIRMADA!* 🎈\n\n` +
+                        `Estimado(a), su cita ha sido agendada con éxito:\n\n` +
+                        `👤 *Paciente:* ${nombre}\n` +
+                        `🏥 *Consultorio:* ${consultorio}\n` +
+                        `📅 *Fecha:* ${fechaCita}\n` +
+                        `⏰ *Hora:* ${horaAtencion}\n` +
+                        `📌 *Edad al día:* ${edad}\n\n` +
+                        `_Por favor, acuda puntualmente a la hora indicada. No hay reprogramación._`;
+
+                    const urlWhatsApp = `https://wa.me/${numWhatsApp}?text=${encodeURIComponent(mensajeWa)}`;
+
+                    // Abrir WhatsApp automáticamente en una pestaña nueva para enviar el mensaje real
+                    window.open(urlWhatsApp, '_blank');
+
                     Swal.fire({
                         icon: 'success',
                         title: '¡Cita Agendada con Éxito! 🎉',
-                        text: `Se ha confirmado la cita y enviado los detalles al número celular registrado: ${cel}.`,
+                        text: `La cita se guardó correctamente y se abrió WhatsApp para enviar los detalles al número: ${cel}.`,
                         confirmButtonColor: '#10b981'
                     });
+
                     document.getElementById('appointmentForm').reset();
                     document.getElementById('resultPanel').classList.add('hidden');
                     document.getElementById('initialHelp').classList.remove('hidden');
