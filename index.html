@@ -104,7 +104,7 @@
                     <h1 class="text-3xl md:text-4xl font-black mt-2 font-kids tracking-wide text-white drop-shadow-md">
                         ¡Agenda tu Cita! 🧸
                     </h1>
-                    <p class="text-sky-100 text-sm font-bold mt-1">Consulte el DNI para verificar la atención</p>
+                    <p class="text-sky-100 text-sm font-bold mt-1">Consulte el DNI del niño para verificar la atención</p>
                 </div>
                 <div class="hidden sm:flex text-5xl text-yellow-300 bounce-icon">
                     <i class="fas fa-heart-pulse"></i>
@@ -124,7 +124,7 @@
                         <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-sky-400 text-lg"></i>
                         <input type="text" id="dniInput" maxlength="8" required
                             class="w-full pl-12 pr-4 py-3.5 input-infantil font-black text-slate-700 text-lg outline-none"
-                            placeholder="DNI del niño o madre">
+                            placeholder="DNI de 8 dígitos del niño">
                     </div>
                     <button type="button" onclick="validarConsultaDNI()" 
                         class="btn-divertido text-white px-8 py-3.5 font-black font-kids text-lg flex items-center justify-center gap-2">
@@ -144,7 +144,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="col-span-full">
-                            <label class="text-xs font-bold text-slate-600 uppercase">Nombres y Apellidos</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase">Apellidos y Nombres</label>
                             <input type="text" id="nombre_paciente" readonly 
                                 class="w-full p-3.5 rounded-xl bg-white border-2 border-slate-200 font-extrabold text-slate-800 outline-none">
                         </div>
@@ -156,7 +156,7 @@
                         </div>
 
                         <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">N° Celular</label>
+                            <label class="text-xs font-bold text-slate-600 uppercase">N° Celular / Teléfono</label>
                             <input type="text" id="celular" required 
                                 class="w-full p-3.5 input-infantil font-extrabold text-slate-800 outline-none">
                         </div>
@@ -219,8 +219,9 @@
     </div>
 
     <script>
-        const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbzFJPWYyiVo1d5lJnG6LtRRkCp6pOyvfvMbApsa1GWTr02m4b2NLLvV7XyKOIyPVVcCmg/exec";
-        const URL_DESTINO  = "https://script.google.com/macros/s/AKfycbwapFFHeqcq5lRDEJBPzX3iottwo3ITQkktSn7aTvJMmTTYK7nDVdK5tduWi1jP1gf4cw/exec";
+        // Nuevos endpoints actualizados
+        const SCRIPT_CENSO = 'https://script.google.com/macros/s/AKfycbzV4-amqK-0j0KkL5D1ukGwVOMdwdzVdlUd7hnaQT3RlBDM-61tTo6oAaiXn7kYtD4xZA/exec';
+        const URL_DESTINO  = 'https://script.google.com/macros/s/AKfycbwapFFHeqcq5lRDEJBPzX3iottwo3ITQkktSn7aTvJMmTTYK7nDVdK5tduWi1jP1gf4cw/exec';
 
         let programaData = [];
         let fechaNacimientoRaw = null;
@@ -237,93 +238,116 @@
             }
 
             Swal.fire({
-                title: 'Verificando el DNI...',
+                title: 'Verificando en el Censo...',
                 text: 'Por favor espere un momento 🎈',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
 
             try {
-                const response = await fetch(URL_CONSULTA);
-                const data = await response.json();
+                const response = await fetch(SCRIPT_CENSO);
+                const jsonResponse = await response.json();
+                const registros = Array.isArray(jsonResponse) ? jsonResponse : (jsonResponse.data || []);
 
-                let paciente = null;
-
-                // 1. Buscar DNI en Columna B (Madre)
-                const busquedaMadre = data.find(item => {
-                    const colB = String(item.dniMadre || item.colB || item[1] || "").trim();
-                    return colB === dni;
+                // 1. Buscar DNI del niño en Columna A (item[0])
+                const registroEncontrado = registros.find(item => {
+                    const colA = String(item.DNI || item.dni || item[0] || "").trim();
+                    return colA.padStart(8, '0') === dni;
                 });
 
-                if (busquedaMadre) {
-                    paciente = {
-                        nombre: busquedaMadre.nombreMadre || busquedaMadre.colC || busquedaMadre[2] || "MADRE REGISTRADA",
-                        celular: busquedaMadre.celular || busquedaMadre.colE || busquedaMadre[4] || "",
-                        fechaNac: "No aplica",
-                        rawFNac: null,
-                        edadTexto: "MADRE"
-                    };
-                } else {
-                    // 2. Buscar DNI en Columna H (Niño) -> Fecha Nacimiento en Columna J (Índice 9)
-                    const busquedaHijo = data.find(item => {
-                        const colH = String(item.dniHijo || item.colH || item[7] || "").trim();
-                        return colH === dni;
-                    });
-
-                    if (busquedaHijo) {
-                        // Se extrae la Fecha de Nacimiento exactamente de la Columna J
-                        const rawFNac = busquedaHijo.fechaNacHijo || busquedaHijo.colJ || busquedaHijo[9] || null;
-                        
-                        paciente = {
-                            nombre: busquedaHijo.nombreHijo || busquedaHijo.colI || busquedaHijo[8] || "PACIENTE NIÑO",
-                            celular: busquedaHijo.celular || busquedaHijo.colE || busquedaHijo[4] || "",
-                            fechaNac: rawFNac ? formatearFechaTexto(rawFNac) : "No registrada",
-                            rawFNac: rawFNac,
-                            edadTexto: rawFNac ? "Seleccione Fecha Cita para calcular" : "MADRE"
-                        };
-                    }
-                }
-
-                if (paciente) {
-                    fechaNacimientoRaw = paciente.rawFNac;
-                    document.getElementById('nombre_paciente').value = paciente.nombre;
-                    document.getElementById('fecha_nacimiento').value = paciente.fechaNac;
-                    document.getElementById('celular').value = paciente.celular;
-                    document.getElementById('edad').value = paciente.edadTexto;
-
-                    await cargarProgramaConfig();
-
-                    document.getElementById('resultPanel').classList.remove('hidden');
-                    document.getElementById('initialHelp').classList.add('hidden');
-                    Swal.close();
-                } else {
-                    Swal.fire({
+                if (!registroEncontrado) {
+                    return Swal.fire({
                         icon: 'error',
                         title: 'DNI No Encontrado',
-                        text: 'Es necesario que actualice sus datos desde el Módulo Mi Familia, recuerde primero activar su ubicación).',
+                        text: 'El DNI ingresado no figura en el padrón del Censo.',
                         confirmButtonColor: '#06b6d4'
                     });
                 }
+
+                // 2. VALIDACIÓN OBLIGATORIA: Verificar que tenga datos en la columna L ("GEOREFERENCIA", item[11])
+                const georeferencia = String(
+                    registroEncontrado.GEOREFERENCIA || 
+                    registroEncontrado.georeferencia || 
+                    registroEncontrado[11] || 
+                    ""
+                ).trim();
+
+                if (!georeferencia || georeferencia === "undefined" || georeferencia === "null") {
+                    document.getElementById('resultPanel').classList.add('hidden');
+                    document.getElementById('initialHelp').classList.add('hidden'); // O mantén initialHelp visible
+                    document.getElementById('initialHelp').classList.remove('hidden');
+
+                    return Swal.fire({
+                        icon: 'warning',
+                        title: 'Sin Georreferencia',
+                        text: 'Este DNI no cuenta con datos en la columna "GEOREFERENCIA" (Columna L). Debe actualizar su ubicación en el sistema antes de poder reservar una cita.',
+                        confirmButtonColor: '#06b6d4'
+                    });
+                }
+
+                // Extracción segura de datos si cumple la validación
+                const rawFNac  = registroEncontrado.FN || registroEncontrado.fn || registroEncontrado[2] || null;
+                const paciente = {
+                    nombre: registroEncontrado["APELLIDOS Y NOMBRES"] || registroEncontrado.apellidos_nombres || registroEncontrado[1] || "PACIENTE NIÑO",
+                    celular: String(registroEncontrado.TELEFONO || registroEncontrado.telefono || registroEncontrado[6] || "").trim(),
+                    fechaNac: rawFNac ? formatearFechaTexto(rawFNac) : "No registrada",
+                    rawFNac: rawFNac,
+                    edadTexto: rawFNac ? "Seleccione Fecha Cita para calcular" : "No disponible"
+                };
+
+                fechaNacimientoRaw = paciente.rawFNac;
+                document.getElementById('nombre_paciente').value = paciente.nombre;
+                document.getElementById('fecha_nacimiento').value = paciente.fechaNac;
+                document.getElementById('celular').value = paciente.celular;
+                document.getElementById('edad').value = paciente.edadTexto;
+
+                await cargarProgramaConfig();
+
+                document.getElementById('resultPanel').classList.remove('hidden');
+                document.getElementById('initialHelp').classList.add('hidden');
+                Swal.close();
+
             } catch (err) {
+                console.error(err);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de Conexión',
-                    text: 'No se pudo consultar la base de datos.',
+                    text: 'No se pudo consultar la base de datos del Censo.',
                     confirmButtonColor: '#06b6d4'
                 });
             }
         }
 
-        // Calcula la Edad restando FECHA CITA - FECHA NACIMIENTO
-        function calcularEdadAlDiaDeCita(fechaNacStr, fechaCitaStr) {
-            if (!fechaNacStr) return "MADRE";
+        // Parsea fechas de manera segura (Soporta DD/MM/YYYY y formato ISO de Google Sheets)
+        function parsearFechaSegura(fStr) {
+            if (!fStr) return null;
+            if (fStr instanceof Date) return fStr;
+            const str = String(fStr).trim();
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(str)) {
+                const [dia, mes, anio] = str.split('/');
+                return new Date(Number(anio), Number(mes) - 1, Number(dia));
+            }
+            const fechaIso = new Date(str);
+            return isNaN(fechaIso.getTime()) ? null : fechaIso;
+        }
 
+        function formatearFechaTexto(fStr) {
+            const f = parsearFechaSegura(fStr);
+            if (!f) return String(fStr);
+            const d = ("0" + f.getDate()).slice(-2);
+            const m = ("0" + (f.getMonth() + 1)).slice(-2);
+            return `${d}/${m}/${f.getFullYear()}`;
+        }
+
+        // Calcula la Edad restando FECHA CITA - FECHA NACIMIENTO
+        function calcularEdadAlDiaDeCita(fechaNacRaw, fechaCitaStr) {
+            const fechaNac = parsearFechaSegura(fechaNacRaw);
+            
             const partesCita = fechaCitaStr.split('/');
-            if (partesCita.length !== 3) return "MADRE";
+            if (partesCita.length !== 3 || !fechaNac) return "No calculable";
             const fechaCita = new Date(partesCita[2], partesCita[1] - 1, partesCita[0]);
 
-            const fechaNac = new Date(fechaNacStr);
-            if (isNaN(fechaNac.getTime()) || isNaN(fechaCita.getTime())) return "MADRE";
+            if (isNaN(fechaNac.getTime()) || isNaN(fechaCita.getTime())) return "No calculable";
 
             let aos = fechaCita.getFullYear() - fechaNac.getFullYear();
             let meses = (fechaCita.getFullYear() - fechaNac.getFullYear()) * 12 + (fechaCita.getMonth() - fechaNac.getMonth());
@@ -331,20 +355,14 @@
             if (fechaCita.getDate() < fechaNac.getDate()) {
                 meses--;
             }
+            if (fechaCita.getMonth() < fechaNac.getMonth() && fechaCita.getDate() === fechaNac.getDate()) {
+                // Ajuste preciso de meses/años
+            }
 
             if (meses < 1) return "Recién Nacido";
             if (meses < 12) return `${meses} Mese(s)`;
             if (aos === 1) return "1 Año";
             return `${aos} Años`;
-        }
-
-        function formatearFechaTexto(fStr) {
-            if (!fStr) return "No registrada";
-            const f = new Date(fStr);
-            if (isNaN(f.getTime())) return String(fStr);
-            const d = ("0" + f.getDate()).slice(-2);
-            const m = ("0" + (f.getMonth() + 1)).slice(-2);
-            return `${d}/${m}/${f.getFullYear()}`;
         }
 
         async function cargarProgramaConfig() {
@@ -390,12 +408,12 @@
             const selectHora = document.getElementById('hora_atencion');
             selectHora.innerHTML = '<option value="" disabled selected>Seleccione Hora</option>';
 
-            // Calcular edad automáticamente restando la Fecha Cita de la Fecha Nacimiento (Columna J)
+            // Calcular edad automáticamente restando la Fecha Cita de la Fecha Nacimiento
             if (fechaNacimientoRaw) {
                 const edadCalculada = calcularEdadAlDiaDeCita(fechaNacimientoRaw, fechaSelected);
                 document.getElementById('edad').value = edadCalculada;
             } else {
-                document.getElementById('edad').value = "MADRE";
+                document.getElementById('edad').value = "No disponible";
             }
 
             const horasFiltradas = [...new Set(
