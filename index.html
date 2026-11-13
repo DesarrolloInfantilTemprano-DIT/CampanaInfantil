@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Citas 🎈</title>
+    <title>Módulo Infantil de Citas 🎈</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -219,7 +219,7 @@
     </div>
 
     <script>
-        // Nuevos endpoints actualizados
+        // Endpoint del Censo compatible con tu script intacto
         const SCRIPT_CENSO = 'https://script.google.com/macros/s/AKfycbzV4-amqK-0j0KkL5D1ukGwVOMdwdzVdlUd7hnaQT3RlBDM-61tTo6oAaiXn7kYtD4xZA/exec';
         const URL_DESTINO  = 'https://script.google.com/macros/s/AKfycbwapFFHeqcq5lRDEJBPzX3iottwo3ITQkktSn7aTvJMmTTYK7nDVdK5tduWi1jP1gf4cw/exec';
 
@@ -245,17 +245,12 @@
             });
 
             try {
-                const response = await fetch(SCRIPT_CENSO);
-                const jsonResponse = await response.json();
-                const registros = Array.isArray(jsonResponse) ? jsonResponse : (jsonResponse.data || []);
+                // Consulta directa utilizando la ruta que ya maneja tu script server-side: ?action=buscar&dni=...
+                const response = await fetch(`${SCRIPT_CENSO}?action=buscar&dni=${dni}`);
+                const registroEncontrado = await response.json();
 
-                // 1. Buscar DNI del niño en Columna A (item[0])
-                const registroEncontrado = registros.find(item => {
-                    const colA = String(item.DNI || item.dni || item[0] || "").trim();
-                    return colA.padStart(8, '0') === dni;
-                });
-
-                if (!registroEncontrado) {
+                // Tu función obtenerPorDNI() retorna { status: "error" } si no lo encuentra
+                if (!registroEncontrado || registroEncontrado.status === "error" || !registroEncontrado.dni) {
                     return Swal.fire({
                         icon: 'error',
                         title: 'DNI No Encontrado',
@@ -264,17 +259,11 @@
                     });
                 }
 
-                // 2. VALIDACIÓN OBLIGATORIA: Verificar que tenga datos en la columna L ("GEOREFERENCIA", item[11])
-                const georeferencia = String(
-                    registroEncontrado.GEOREFERENCIA || 
-                    registroEncontrado.georeferencia || 
-                    registroEncontrado[11] || 
-                    ""
-                ).trim();
+                // VALIDACIÓN OBLIGATORIA: Verificar georreferencia (Columna L) usando la propiedad que armó tu script
+                const georeferencia = String(registroEncontrado.georeferencia || "").trim();
 
                 if (!georeferencia || georeferencia === "undefined" || georeferencia === "null") {
                     document.getElementById('resultPanel').classList.add('hidden');
-                    document.getElementById('initialHelp').classList.add('hidden'); // O mantén initialHelp visible
                     document.getElementById('initialHelp').classList.remove('hidden');
 
                     return Swal.fire({
@@ -285,11 +274,11 @@
                     });
                 }
 
-                // Extracción segura de datos si cumple la validación
-                const rawFNac  = registroEncontrado.FN || registroEncontrado.fn || registroEncontrado[2] || null;
+                // Extracción de datos usando las propiedades estandarizadas por tu función construirObjetoFilaDinamico
+                const rawFNac  = registroEncontrado.fn || null;
                 const paciente = {
-                    nombre: registroEncontrado["APELLIDOS Y NOMBRES"] || registroEncontrado.apellidos_nombres || registroEncontrado[1] || "PACIENTE NIÑO",
-                    celular: String(registroEncontrado.TELEFONO || registroEncontrado.telefono || registroEncontrado[6] || "").trim(),
+                    nombre: registroEncontrado.nombreB || "PACIENTE NIÑO",
+                    celular: String(registroEncontrado.telefono || "").trim(),
                     fechaNac: rawFNac ? formatearFechaTexto(rawFNac) : "No registrada",
                     rawFNac: rawFNac,
                     edadTexto: rawFNac ? "Seleccione Fecha Cita para calcular" : "No disponible"
@@ -318,7 +307,6 @@
             }
         }
 
-        // Parsea fechas de manera segura (Soporta DD/MM/YYYY y formato ISO de Google Sheets)
         function parsearFechaSegura(fStr) {
             if (!fStr) return null;
             if (fStr instanceof Date) return fStr;
@@ -339,10 +327,8 @@
             return `${d}/${m}/${f.getFullYear()}`;
         }
 
-        // Calcula la Edad restando FECHA CITA - FECHA NACIMIENTO
         function calcularEdadAlDiaDeCita(fechaNacRaw, fechaCitaStr) {
             const fechaNac = parsearFechaSegura(fechaNacRaw);
-            
             const partesCita = fechaCitaStr.split('/');
             if (partesCita.length !== 3 || !fechaNac) return "No calculable";
             const fechaCita = new Date(partesCita[2], partesCita[1] - 1, partesCita[0]);
@@ -354,9 +340,6 @@
 
             if (fechaCita.getDate() < fechaNac.getDate()) {
                 meses--;
-            }
-            if (fechaCita.getMonth() < fechaNac.getMonth() && fechaCita.getDate() === fechaNac.getDate()) {
-                // Ajuste preciso de meses/años
             }
 
             if (meses < 1) return "Recién Nacido";
@@ -408,7 +391,6 @@
             const selectHora = document.getElementById('hora_atencion');
             selectHora.innerHTML = '<option value="" disabled selected>Seleccione Hora</option>';
 
-            // Calcular edad automáticamente restando la Fecha Cita de la Fecha Nacimiento
             if (fechaNacimientoRaw) {
                 const edadCalculada = calcularEdadAlDiaDeCita(fechaNacimientoRaw, fechaSelected);
                 document.getElementById('edad').value = edadCalculada;
