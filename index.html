@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo Infantil de Citas 🎈</title>
+    <title>Módulo de Citas 🎈</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -144,21 +143,16 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="col-span-full">
-                            <label class="text-xs font-bold text-slate-600 uppercase">Apellidos y Nombres</label>
-                            <input type="text" id="nombre_paciente" readonly 
+                            <label class="text-xs font-bold text-slate-600 uppercase">Apellido Paterno</label>
+                            <input type="text" id="apellido_paterno" readonly 
                                 class="w-full p-3.5 rounded-xl bg-white border-2 border-slate-200 font-extrabold text-slate-800 outline-none">
                         </div>
 
-                        <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">Fecha de Nacimiento</label>
-                            <input type="text" id="fecha_nacimiento" readonly 
-                                class="w-full p-3.5 rounded-xl bg-white border-2 border-slate-200 font-extrabold text-slate-800 outline-none">
-                        </div>
-
-                        <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">N° Celular / Teléfono</label>
-                            <input type="text" id="celular" required 
-                                class="w-full p-3.5 input-infantil font-extrabold text-slate-800 outline-none">
+                        <!-- Campos ocultos pero funcionales para guardar la información completa internamente -->
+                        <div style="display:none;">
+                            <input type="text" id="nombre_paciente">
+                            <input type="text" id="fecha_nacimiento">
+                            <input type="text" id="celular">
                         </div>
 
                         <div class="col-span-full">
@@ -219,7 +213,6 @@
     </div>
 
     <script>
-        // Endpoint del Censo compatible con tu script intacto
         const SCRIPT_CENSO = 'https://script.google.com/macros/s/AKfycbzV4-amqK-0j0KkL5D1ukGwVOMdwdzVdlUd7hnaQT3RlBDM-61tTo6oAaiXn7kYtD4xZA/exec';
         const URL_DESTINO  = 'https://script.google.com/macros/s/AKfycbwapFFHeqcq5lRDEJBPzX3iottwo3ITQkktSn7aTvJMmTTYK7nDVdK5tduWi1jP1gf4cw/exec';
 
@@ -237,29 +230,44 @@
                 });
             }
 
+            // Contador regresivo de 20 a 0 segundos sin mencionar la palabra Censo
+            let segundosRestantes = 20;
             Swal.fire({
-                title: 'Verificando en el Censo...',
-                text: 'Por favor espere un momento 🎈',
+                title: 'Buscando información...',
+                html: `Por favor espere un momento 🎈<br><br><b>Tiempo restante: <span id="contador-segundos">${segundosRestantes}</span>s</b>`,
                 allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
+                didOpen: () => {
+                    Swal.showLoading();
+                    window.timerInterval = setInterval(() => {
+                        segundosRestantes--;
+                        const span = document.getElementById('contador-segundos');
+                        if (span) span.textContent = segundosRestantes;
+                        if (segundosRestantes <= 0) {
+                            clearInterval(window.timerInterval);
+                        }
+                    }, 1000);
+                },
+                willClose: () => {
+                    clearInterval(window.timerInterval);
+                }
             });
 
             try {
-                // Consulta directa utilizando la ruta que ya maneja tu script server-side: ?action=buscar&dni=...
                 const response = await fetch(`${SCRIPT_CENSO}?action=buscar&dni=${dni}`);
                 const registroEncontrado = await response.json();
 
-                // Tu función obtenerPorDNI() retorna { status: "error" } si no lo encuentra
+                clearInterval(window.timerInterval);
+
                 if (!registroEncontrado || registroEncontrado.status === "error" || !registroEncontrado.dni) {
                     return Swal.fire({
                         icon: 'error',
-                        title: 'DNI No Encontrado',
-                        text: 'El DNI ingresado no figura en el padrón del Censo.',
+                        title: 'Usuario no registrado',
+                        text: 'El DNI ingresado no se encuentra en la base de datos.',
                         confirmButtonColor: '#06b6d4'
                     });
                 }
 
-                // VALIDACIÓN OBLIGATORIA: Verificar georreferencia (Columna L) usando la propiedad que armó tu script
+                // Validación de Georreferencia
                 const georeferencia = String(registroEncontrado.georeferencia || "").trim();
 
                 if (!georeferencia || georeferencia === "undefined" || georeferencia === "null") {
@@ -268,16 +276,21 @@
 
                     return Swal.fire({
                         icon: 'warning',
-                        title: 'Sin Georreferencia',
-                        text: 'Este DNI no cuenta con datos en la columna "GEOREFERENCIA" (Columna L). Debe actualizar su ubicación en el sistema antes de poder reservar una cita.',
+                        title: 'Actualización requerida',
+                        text: 'Usuario pendiente a actualizar su dirección.',
                         confirmButtonColor: '#06b6d4'
                     });
                 }
 
-                // Extracción de datos usando las propiedades estandarizadas por tu función construirObjetoFilaDinamico
                 const rawFNac  = registroEncontrado.fn || null;
+                const nombreCompleto = registroEncontrado.nombreB || "PACIENTE NIÑO";
+                
+                // Extraer solo el apellido paterno (primera palabra de los apellidos y nombres)
+                const apellidoPaterno = nombreCompleto.trim().split(' ')[0] || nombreCompleto;
+
                 const paciente = {
-                    nombre: registroEncontrado.nombreB || "PACIENTE NIÑO",
+                    nombreCompleto: nombreCompleto,
+                    apellidoPaterno: apellidoPaterno,
                     celular: String(registroEncontrado.telefono || "").trim(),
                     fechaNac: rawFNac ? formatearFechaTexto(rawFNac) : "No registrada",
                     rawFNac: rawFNac,
@@ -285,7 +298,10 @@
                 };
 
                 fechaNacimientoRaw = paciente.rawFNac;
-                document.getElementById('nombre_paciente').value = paciente.nombre;
+                
+                // Asignar valores visibles y ocultos
+                document.getElementById('apellido_paterno').value = paciente.apellidoPaterno;
+                document.getElementById('nombre_paciente').value = paciente.nombreCompleto;
                 document.getElementById('fecha_nacimiento').value = paciente.fechaNac;
                 document.getElementById('celular').value = paciente.celular;
                 document.getElementById('edad').value = paciente.edadTexto;
@@ -297,11 +313,12 @@
                 Swal.close();
 
             } catch (err) {
+                clearInterval(window.timerInterval);
                 console.error(err);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de Conexión',
-                    text: 'No se pudo consultar la base de datos del Censo.',
+                    text: 'No se pudo completar la consulta en este momento.',
                     confirmButtonColor: '#06b6d4'
                 });
             }
@@ -426,6 +443,7 @@
                 });
             }
 
+            // Payload completo que incluye la información completa y el número de celular registrado
             const payload = {
                 dni_paciente: dni,
                 nombre_paciente: nombre,
@@ -458,8 +476,8 @@
                 } else if (result.status === "success") {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Cita Agendada! 🎉',
-                        text: 'Acuda a la hora de cita, no hay reprogramación.',
+                        title: '¡Cita Agendada con Éxito! 🎉',
+                        text: `Se ha confirmado la cita y enviado los detalles al número celular registrado: ${cel}.`,
                         confirmButtonColor: '#10b981'
                     });
                     document.getElementById('appointmentForm').reset();
